@@ -1,12 +1,13 @@
-import re ,os,time
+import os,time
 import autoImputer
 import pandas as pd 
 import numpy as np
-import approx
+import mlmath
 
 
 classdata = pd.read_csv(r'C:\Users\codeworld\diabetes.csv')
-def dataNorm(data:pd.DataFrame, ) -> list(pd.DataFrame):
+
+def dataNorm(data:pd.DataFrame, ) -> pd.DataFrame:
     '''
         Returns a list of pandas datframe objects containing three categories of data,
         standard scaled data, MinMax scaled and Normalised data. This would allow the 
@@ -173,7 +174,7 @@ def generateModel(data: pd.DataFrame,target,mode:int):
 
         ])
         callback = EarlyStopping(
-        patience=30,
+        patience=100,
         min_delta=0.001,
         restore_best_weights=True)
 
@@ -192,7 +193,7 @@ def generateModel(data: pd.DataFrame,target,mode:int):
          )
          
         preds=deepModel.predict(X_test)
-        preds = [approx.approximator(i) for i in preds]
+        preds = [mlmath.approximator(i) for i in preds]
         print(classification_report(preds,y_test))
         print('this is your deep model\n')
         deepModel.save(input('input model name\n')+'.sav')

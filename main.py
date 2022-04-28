@@ -3,11 +3,16 @@ import numpy as np
 from sklearn.pipeline import Pipeline
 
 class DataFlow:
-    def __init__(self,data:pd.DataFrame,use_filter: bool =True):
+    def __init__(self,data:pd.DataFrame,use_filter: bool =True )-> None:
+        """
+             data is a pandas.Dataframe object, use_filter is used to specify if
+             the filter_redundant_object funtion should be used.
+        """
         self.data = data 
         self.use_filter = use_filter
         print(self.data)
         self.target = input('please specify the target column correctly')
+        return None
 
     def classOrReg(self) -> tuple(int,str):
         dataTarget = self.data.pop(self.target)
@@ -29,6 +34,7 @@ class DataFlow:
             encoding,dataNorm,feature_selector,
             filterRedundantObject
         )
+
         self.data1,self.data2,self.data3 = dataNorm(self.data)
         db = [self.data1,self.data2,self.data3]
         if self.use_filter == True:
