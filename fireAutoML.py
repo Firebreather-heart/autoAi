@@ -188,7 +188,7 @@ def generateModel(data: pd.DataFrame,target,mode:int):
         validation_split=0.3,
         batch_size=512,
         epochs =1000,
-        callbacks=[callback,ModelCheckpoint('runtimemodels.sav', monitor= 'val_acc' , verbose=1, save_best_only=True,mode= max)],
+        callbacks=[callback,ModelCheckpoint('runtimemodels.sav' , verbose=1, save_best_only=True,mode= max)],
          verbose=1
          )
          

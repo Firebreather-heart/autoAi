@@ -4,7 +4,7 @@ from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier, RandomFo
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier,KNeighborsRegressor
 from sklearn.svm import SVC,SVR 
-from sklearn.metrics import classification_report,f1_score,mean_squared_error
+from sklearn.metrics import f1_score,mean_squared_error
 from xgboost import XGBClassifier,XGBRegressor
 
 def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, voting:str = 'hard'):
@@ -73,10 +73,10 @@ def makeRegressors(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget,vot
         model =model[1].fit(data,target)
         pred = model[1].predict(testData)
         print(pred)
-        print(model[1],'\n',classification_report(pred,testTarget))
+        print(model[1],'\n',mean_squared_error(testTarget,pred))
         trainedModels.append(model[1])
         preds.append((model[1],pred))
-        fs[model[0]]=f1_score(pred,testTarget)
+        fs[model[0]]=mean_squared_error(pred,testTarget)
         
         
    

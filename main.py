@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
-from sklearn.pipeline import Pipeline
 
 class DataFlow:
-    def __init__(self,data:pd.DataFrame,use_filter: bool =True )-> None:
+    def __init__(self,data:pd.DataFrame,target:str,use_filter: bool =True )-> None:
         """
              data is a pandas.Dataframe object, use_filter is used to specify if
              the filter_redundant_object funtion should be used.
@@ -11,13 +10,13 @@ class DataFlow:
         self.data = data 
         self.use_filter = use_filter
         print(self.data)
-        self.target = input('please specify the target column correctly')
+        self.target = target
         return None
 
-    def classOrReg(self) -> tuple(int,str):
+    def classOrReg(self) :
         dataTarget = self.data.pop(self.target)
         decider = np.unique(dataTarget)
-        if decider > 5:
+        if decider > 6:
             return (0,'REG')
         else:
             return (1,'CLS')
@@ -44,3 +43,54 @@ class DataFlow:
         db = [feature_selector(df) for df in db]
         db = [encoding(df) for df in db]
         return db 
+if __name__ =='__main__':
+    import os,re,time
+    from __init__ import confirmInstallLib,__all__
+    print('I will be needing a few libraries, including pandas and sklearn, possibly tensorflow and keras\n If you dont have them I would install them for you \n ')
+    deepOrNot = input('\n would you prefer i use a deep Model or not, if so i would have to install tensorflow\n Y or N').lower()
+    deep = True if deepOrNot == 'y' else False
+    exreg = re.compile(r'[.].*')
+    app_path = os.getcwd()+r'/fire_automl/'
+
+    if os.path.exists(app_path):
+        os.system(f'cd {app_path}')
+    else:
+        try:
+            os.system(f'mkdir {app_path} ')
+        except Exception:
+            print('Seems permission is needed for me to create directories, run this program as admin!')
+            print('closing program......')
+            os.system('exit')
+    ml = __all__['ml']
+    dl = __all__['deep']
+    for library in ml:
+        confirmInstallLib(library)
+    if deep == True:
+        confirmInstallLib(dl[0])
+    
+    import pandas as pd        
+    print('csv and xlsx files only\n')
+    state = True
+    while state == True:
+        data_dir = input('please enter the directory of your data file:\t')
+        extension = exreg.findall(data_dir)
+        ex = ['.csv', '.xlsx']
+        if extension == [ex[0]]:
+            dataframe = pd.read_csv(data_dir)
+            state=False
+        elif extension == [ex[1]]:
+            dataframe = pd.read_excel(data_dir)
+            state = False
+        else:
+            print('data is not a csv or excel file and cannot be opened\n please try again')
+
+    print(dataframe.keys())
+    
+    tstat = True
+    while tstat == True:
+        try:
+            target = input('which of these is your target column:\t')
+            y = dataframe.pop(target)
+            tstat = False
+        except Exception:
+            print('could not find the specified target, try again\n')
