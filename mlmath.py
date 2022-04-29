@@ -14,3 +14,5 @@ def fastForward(num:int)->int:
         if num < req_pow and req_pow < num*2:
             threshold = True
     return req_pow
+def breakDown(num:int) -> int:
+    return num/256
