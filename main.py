@@ -111,7 +111,7 @@ if __name__ =='__main__':
             modelClass = makeRegressors
         elif cor[0] == 1:
             modelClass = makeClassifiers
-            no_classes = cor[3]
+            no_classes = cor[2]
         _,_,preferredmodel =modelClass(X_train,y_train,X_val,y_val)[0][0]
         preferredmodel.fit(dataflow.data,dataflow.dataTarget)
         serialize(preferredmodel)
