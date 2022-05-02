@@ -13,10 +13,10 @@ class DataFlow:
         self.use_filter = use_filter
         print(self.data)
         self.target = target
+        self.dataTarget = self.data.pop(self.target)
         return None
 
     def classOrReg(self) :
-        self.dataTarget = self.data.pop(self.target)
         decider = len(np.unique(self.dataTarget))
         print(decider,'classes detected')
         if decider > 10:
@@ -43,7 +43,7 @@ class DataFlow:
             db = [filterRedundantObject(df) for df in db]
         else:
             pass
-        db = [feature_selector(df,self.dataTarget) for df in db]
+        db = [feature_selector(df,self.dataTarget)[0] for df in db]
         db = [encoding(df) for df in db]
         return db 
 if __name__ =='__main__':
