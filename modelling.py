@@ -6,6 +6,22 @@ from sklearn.neighbors import KNeighborsClassifier,KNeighborsRegressor
 from sklearn.svm import SVC,SVR 
 from sklearn.metrics import f1_score,mean_squared_error
 from xgboost import XGBClassifier,XGBRegressor
+import os
+def serialize(model):
+            print(model)
+            filename = input('input your desired model name\n')+'.sav'
+            try:
+                import joblib 
+                joblib.dump(model,filename)
+            except ModuleNotFoundError:
+                try:
+                    os.system('pip install joblib')
+                    import joblib 
+                    joblib.dump(model,filename)
+                except Exception:
+                    print('failed to install joblib, using pickle instead')
+                    import pickle 
+                    pickle.dump(model,filename)
 
 def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, voting:str = 'hard'):
     from threading import Thread
@@ -30,7 +46,6 @@ def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, v
     def runModel(model:tuple(str,object)):
         model =model[1].fit(data,target)
         pred = model[1].predict(testData)
-        print(pred)
         print(model[1],'\n',classification_report(pred,testTarget))
         trainedModels.append(model[1])
         preds.append((model[1],pred))
@@ -45,12 +60,20 @@ def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, v
     from sklearn.ensemble import VotingClassifier 
     voter = VotingClassifier(fs[:3],voting=voting,verbose=True,n_jobs=nj)
     voter.fit(data,target)
-    print('voting Classifier','\n',classification_report(voter.predict(testData),testTarget))
-    return [trainedModels,preds]
+    trainedModels.append(voter)
+    for mo in fs[:3]:serialize(mo)
+    voterPred=voter.predict(testData)
+    preds.append(('Voting Classifier',voterPred))
+    print('voting Classifier','\n',classification_report(voterPred,testTarget))
+    fs.append(('voter',f1_score(voterPred,testTarget)))
+    fs = sorted(fs,reverse=True)
+    print(f'{fs[0][0]} appears to be the best performer with f1 score of {fs[0][1]}')
+    serialize(voter)
+    return [trainedModels,preds,fs]
 
 def makeRegressors(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget,voting:str = 'hard'):
     from threading import Thread
-    from sklearn.metrics import classification_report
+    from sklearn.metrics import mean_squared_error
     lr=0.001
     rs = 2000
     nj =-1
@@ -73,7 +96,7 @@ def makeRegressors(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget,vot
         model =model[1].fit(data,target)
         pred = model[1].predict(testData)
         print(pred)
-        print(model[1],'\n',mean_squared_error(testTarget,pred))
+        print(model[1],'error \n',mean_squared_error(testTarget,pred))
         trainedModels.append(model[1])
         preds.append((model[1],pred))
         fs[model[0]]=mean_squared_error(pred,testTarget)
@@ -87,5 +110,12 @@ def makeRegressors(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget,vot
     from sklearn.ensemble import VotingRegressor
     voter = VotingRegressor(fs[:3],voting=voting,verbose=True,n_jobs=nj)
     voter.fit(data,target)
-    print('voting Regressor','\n',mean_squared_error(voter.predict(testData),testTarget))
-    return [trainedModels,preds]
+    for mo in fs[:3]:serialize(mo)
+    voterPred=voter.predict(testData)
+    preds.append(('Voting Regressor',voterPred))
+    print('voting Regressor error','\n',mean_squared_error(voter.predict(testData),testTarget))
+    fs.append(('voter',mean_squared_error(voterPred,testTarget)))
+    fs = sorted(fs,reverse=True)
+    print(f'{fs[0][0]} appears to be the best performer with error of {fs[0][1]}')
+    serialize(voter)
+    return [trainedModels,preds,fs]

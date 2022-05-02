@@ -265,28 +265,3 @@ def manual_object_fix(data:pd.DataFrame,target = None) -> pd.DataFrame:
             data = data.dropna(axis='rows')
     print('..missing values fixed\n')
     return data
-
-
-
-
-
-
-class Process:
-    def __init__(self,data:pd.DataFrame,target):
-        self.target =data.pop(target)
-        self.data = data 
-    def direction():
-        pass
-    def rollOver(self):
-        self.data =manual_missing_NonObject_fix(self.data)
-        self.data=manual_object_fix(self.data)
-        data1,data2,data3 =dataNorm(self.data)
-        databank =[data1,data2,data3]
-        for i in databank:
-            i=filterRedundantObject(i)
-            i=encoding(i)
-            i,targ =feature_selector(i,self.target)
-            print(i)
-            generateModel(i,targ,mode=0)
-
-Process(classdata,'Outcome').rollOver()      

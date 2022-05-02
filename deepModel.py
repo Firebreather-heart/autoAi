@@ -3,7 +3,7 @@ from tensorflow.keras import layers,Sequential
 from tensorflow.keras.callbacks import EarlyStopping,ModelCheckpoint 
 import mlmath
 class DeepModel:
-    def __init__(self,data:pd.DataFrame,target:pd.Series,task:str='cls',**kwargs):
+    def __init__(self,data:pd.DataFrame,target:pd.Series,testdata:pd.DataFrame,testTarget:pd.Series,task:str='cls',**kwargs):
         '''
             DeepModel Class should be fed only with preprocessed data
             the target can be any of pd.series,pd.Dataframe or np.ndarray object
@@ -23,6 +23,8 @@ class DeepModel:
         self.data = data 
         self.target = target 
         self.task = task
+        self.testdata = testdata
+        self.testTarget = testTarget
         self.input_shape = [data.shape[1]]
         if self.task == 'cls':
             self.activation ='sigmoid'
@@ -31,11 +33,13 @@ class DeepModel:
                 self.outLayer = 1
             else:
                 self.outLayer = self.output
+                self.activation = 'softmax'
         elif self.task == 'reg':
             self.outLayer =1
             self.activation = 'relu'
         else:
             raise ValueError('invalid argument passed for task %s'%(task))
+
     def createLayer(self,model:Sequential,num_layers:int,layer_width:int)->Sequential:
         activation_func =  'relu'
         layer_width = layer_width/2
@@ -85,12 +89,15 @@ class DeepModel:
                 restore_best_weights=True)
         history = self.deepModel.fit(self.data,self.target,
                         validation_split =0.3,
-                         batch_size=512,
+                         batch_size=50,
                         epochs =1000,
                         callbacks=[callback,ModelCheckpoint('runtimemodels.sav', 
                         verbose=1, 
                         save_best_only=True,mode= max)],
                         verbose=1
                         )
+        print('Evaluating deep Model\n')
+        self.deepModel.evaluate(self.testdata,self.testTarget)
+        self.deepModel.save('savedmodel.sav')
         return history
     
