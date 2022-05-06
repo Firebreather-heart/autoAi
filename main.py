@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from tkinter.filedialog import askopenfilename
 from modelling import serialize
-
+from deepModel import DeepModel
 class DataFlow:
     def __init__(self,data:pd.DataFrame,target:str,use_filter: bool =True )-> None:
         """
@@ -13,7 +13,7 @@ class DataFlow:
         self.use_filter = use_filter
         print(self.data)
         self.target = target
-        self.dataTarget = self.data.pop(self.target)
+        self.dataTarget = self.data[self.target]
         return None
 
     def classOrReg(self) :
@@ -22,12 +22,14 @@ class DataFlow:
         if decider > 10:
             return (0,'reg')
         else:
-            return (1,'cls',decider)
+            dcd = decider -1
+            return (1,'cls',dcd)
 
     def fixData(self)-> pd.DataFrame:
         from fireAutoML import manual_object_fix,manual_missing_NonObject_fix
         self.data = manual_missing_NonObject_fix(data=self.data,aggresive=False)
         self.data = manual_object_fix(self.data)
+        self.data.pop(self.target)
         return self.data
 
     def preprocess(self):
@@ -50,7 +52,7 @@ if __name__ =='__main__':
     import os,re,time
     from __init__ import confirmInstallLib,__all__
     print('Please keep the internet connetion active\n')
-    print('I will be needing a few libraries, including pandas and sklearn, possibly tensorflow and keras\n If you dont have them I would install them for you \n ')
+    print('I will be needing a few libraries, including pandas and sklearn, possibly tensorflow \n If you dont have them I would install them for you \n ')
     deepOrNot = input('\n would you prefer i use a deep Model or not, if so i would have to install tensorflow\n Y or N\n').lower()
     deep = True if deepOrNot == 'y' else False
     exreg = re.compile(r'[.].*')
@@ -97,9 +99,10 @@ if __name__ =='__main__':
             target = input('which of these is your target column:\t')
             y = dataframe[target]
             tstat = False
+
         except Exception:
             print('could not find the specified target, try again\n')
-    dataflow = DataFlow(dataframe,target)
+    dataflow = DataFlow(dataframe,target,use_filter=True)
     dataflow.fixData()
     data_list = dataflow.preprocess()
     from sklearn.model_selection import train_test_split
@@ -112,7 +115,20 @@ if __name__ =='__main__':
         elif cor[0] == 1:
             modelClass = makeClassifiers
             no_classes = cor[2]
-        _,_,preferredmodel =modelClass(X_train,y_train,X_val,y_val)[0][0]
+        _,_,preferredmodel =modelClass(X_train,y_train,X_val,y_val)
+
+        preferredmodel:dict
+
+        preferredmodel = list(preferredmodel.keys())[0][1]
         preferredmodel.fit(dataflow.data,dataflow.dataTarget)
+        print('Here is the final model, you can delete the other serialized models if you wish\n')
         serialize(preferredmodel)
+        if deep == True:
+            print('proceeding to fit a deep model\n please wait.....')
+            if cor[2] > 1:
+                multiclass = True 
+            if multiclass == True:
+                classNo = cor[2] +1
+            neuralModel = DeepModel(X_train,y_train,X_val,y_val,task=cor[1], multiclass=classNo)
+            neuralModel.rollOver()
         

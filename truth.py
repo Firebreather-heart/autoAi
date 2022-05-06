@@ -1,3 +1,4 @@
+
 def truthTable(base:list,comp:list)->list:
     bucket = zip(base,comp)
     basin = []

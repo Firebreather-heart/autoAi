@@ -71,6 +71,7 @@ def filterRedundantObject(data:pd.DataFrame,):
     for column in data.select_dtypes(include=object).columns:
         if set(i for i in data[column].values).__len__() >50:
             data = data.drop(column,axis='columns')
+            print(f'dropping.......{column}')
         
     return data
 def manual_missing_NonObject_fix(data: pd.DataFrame,target=None,aggresive: bool=True) -> pd.DataFrame:
@@ -91,10 +92,12 @@ def manual_missing_NonObject_fix(data: pd.DataFrame,target=None,aggresive: bool=
             if j[1] > 0.5*data[j[0]].shape[0]:
                 if aggresive == True:
                     data = data.drop(j[0],axis='columns')
+                    print(f'dropping.......{j[0]}')
                 else:
                     decision = input(f'[.] ..The column {j[0]} has {j[1]} missing values out of {data[j[0]].shape[1]}, its advisable to drop it\n Reply yes or no\n').lower()
                     if decision == 'yes':
                         data = data.drop(j[0],axis='columns')
+                        print(f'dropping.......{j[0]}')
                     else:
                         print("Should i fill the the null values with the mean, median, or zero..\n or would you like to type in a code for me to evaluate\n")
                         resp = input('input any of the following, mean, median, zero or code:\t').lower()
@@ -129,7 +132,9 @@ def manual_object_fix(data:pd.DataFrame,target = None) -> pd.DataFrame:
     for j in zip(data.columns,v):
          if j[1]>0 and j[1] > 0.3*len(data[j[0]]):
             data =data.drop(j[0],axis ='columns')
+            print(f'dropping.......{j[0]}')
          elif j[1]>0 and j[1] < 0.3*len(data[j[0]]):
             data = data.dropna(axis='rows')
     print('..missing values fixed\n')
+    print(data)
     return data

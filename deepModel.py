@@ -35,7 +35,7 @@ class DeepModel:
                 self.outLayer = self.output
                 self.activation = 'softmax'
         elif self.task == 'reg':
-            self.outLayer =1
+            self.outLayer = 1
             self.activation = 'relu'
         else:
             raise ValueError('invalid argument passed for task %s'%(task))
@@ -100,4 +100,9 @@ class DeepModel:
         self.deepModel.evaluate(self.testdata,self.testTarget)
         self.deepModel.save('savedmodel.sav')
         return history
+
+    def rollOver(self):
+        self.makeCompileModel()
+        self.trainModel()
+        return self.deepModel
     
