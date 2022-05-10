@@ -3,6 +3,7 @@ import numpy as np
 from tkinter.filedialog import askopenfilename
 from modelling import serialize
 from deepModel import DeepModel
+from truth import targetTypechecker
 class DataFlow:
     def __init__(self,data:pd.DataFrame,target:str,use_filter: bool =True )-> None:
         """
@@ -23,7 +24,11 @@ class DataFlow:
             return (0,'reg')
         else:
             dcd = decider -1
+            if targetTypechecker(self.data[self.target]) is False:
+                from sklearn.preprocessing import LabelEncoder
+                self.dataTarget = LabelEncoder().fit_transform(self.dataTarget)
             return (1,'cls',dcd)
+            
 
     def fixData(self)-> pd.DataFrame:
         from fireAutoML import manual_object_fix,manual_missing_NonObject_fix
@@ -47,12 +52,14 @@ class DataFlow:
             pass
         db = [feature_selector(df,self.dataTarget)[0] for df in db]
         db = [encoding(df) for df in db]
+       
         return db 
 if __name__ =='__main__':
-    import os,re,time
+    import os,re,sys,logging
+    logging.basicConfig(level=logging.INFO,)
     from __init__ import confirmInstallLib,__all__
-    print('Please keep the internet connetion active\n')
-    print('I will be needing a few libraries, including pandas and sklearn, possibly tensorflow \n If you dont have them I would install them for you \n ')
+    logging.info('Please keep the internet connetion active\n')
+    logging.info('I will be needing a few libraries, including pandas and sklearn, possibly tensorflow \n If you dont have them I would install them for you \n ')
     deepOrNot = input('\n would you prefer i use a deep Model or not, if so i would have to install tensorflow\n Y or N\n').lower()
     deep = True if deepOrNot == 'y' else False
     exreg = re.compile(r'[.].*')
@@ -66,7 +73,7 @@ if __name__ =='__main__':
         except Exception:
             print('Seems permission is needed for me to create directories, run this program as admin!')
             print('closing program......')
-            os.system('exit')
+            sys.exit("failed creating directory")
     ml = __all__['ml']
     dl = __all__['deep']
     for library in ml:
@@ -109,7 +116,8 @@ if __name__ =='__main__':
     from modelling import makeRegressors,makeClassifiers
     for data in data_list:
         cor = dataflow.classOrReg()
-        X_train,X_val,y_train,y_val = train_test_split(dataflow.data,dataflow.dataTarget, test_size=0.3)
+        dataflow.data = pd.get_dummies(dataflow.data)
+        X_train,X_val,y_train,y_val = train_test_split(data,dataflow.dataTarget, test_size=0.3)
         if cor[0] == 0:
             modelClass = makeRegressors
         elif cor[0] == 1:
@@ -118,10 +126,10 @@ if __name__ =='__main__':
         _,_,preferredmodel =modelClass(X_train,y_train,X_val,y_val)
 
         preferredmodel:dict
-
-        preferredmodel = list(preferredmodel.keys())[0][1]
+        usecase = preferredmodel.keys()
+        preferredmodel = list(usecase)[0][1]
         preferredmodel.fit(dataflow.data,dataflow.dataTarget)
-        print('Here is the final model, you can delete the other serialized models if you wish\n')
+        logging.info('Here is the final model, you can delete the other serialized models if you wish\n')
         serialize(preferredmodel)
         if deep == True:
             print('proceeding to fit a deep model\n please wait.....')

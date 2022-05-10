@@ -4,7 +4,7 @@ from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier, RandomFo
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier,KNeighborsRegressor
 from sklearn.svm import SVC,SVR 
-from sklearn.metrics import f1_score,mean_squared_error
+from sklearn.metrics import f1_score,mean_absolute_error
 from xgboost import XGBClassifier,XGBRegressor
 import os
 def serialize(model):
@@ -30,7 +30,7 @@ def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, v
     rs = 2000
     nj =-1
     models = [
-               (MLPClassifier(early_stopping=False,max_iter=1000,verbose=1,random_state=rs,learning_rate='adaptive',
+               (MLPClassifier(early_stopping=False,max_iter=1000,verbose=0,random_state=rs,learning_rate='adaptive',
                             n_iter_no_change=10,hidden_layer_sizes=(100,),
                             warm_start=True),'MLP'),
              ( RandomForestClassifier(n_estimators=500,n_jobs=nj,random_state=rs,warm_start=True,),'RFC'),
@@ -53,10 +53,13 @@ def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, v
         fs[(name,model)]=f1_score(pred,testTarget)
         
         
-   
+    threads =[]
     for mod in models:
         mod_to_thread = Thread(target=runModel(mod))
+        threads.append(mod_to_thread)
         mod_to_thread.start()
+    for t in threads:t.join()
+    
 
     fs = dict(sorted(fs.items(),key=lambda x: x[1],reverse=True))
 
@@ -77,40 +80,39 @@ def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, v
     print('voting Classifier','\n',classification_report(voterPred,testTarget))
     fs[('voter',voter)]= f1_score(voterPred,testTarget)
     fs = sorted(fs.items(),key=lambda x: x[1],reverse=True)
-    print(f'{fs[0][0]} appears to be the best performer with f1 score of {fs[0]}')
+    fs = dict(fs)
+    print(f'{fs[0][0]} appears to be the best performer with f1 score of {fs[1]}')
     serialize(voter)
     return trainedModels,preds,fs
 
-def makeRegressors(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget,voting:str = 'hard'):
+def makeRegressors(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget,):
     from threading import Thread
-    from sklearn.metrics import mean_squared_error
     lr=0.001
     rs = 2000
     nj =-1
     models = [
-               (MLPRegressor(early_stopping=False,max_iter=1000,verbose=1,random_state=rs,learning_rate='adaptive',
+               (MLPRegressor(early_stopping=False,max_iter=1000,verbose=0,random_state=rs,learning_rate='adaptive',
                             n_iter_no_change=10,hidden_layer_sizes=(100,),
                             warm_start=True),'MLP'),
              ( RandomForestRegressor(n_estimators=500,n_jobs=nj,random_state=rs,warm_start=True,),'RFR'),
               (XGBRegressor(use_label_encoder=False,n_estimators=500,n_jobs=nj,),'XGB'),
            ( AdaBoostRegressor(n_estimators=500,learning_rate=lr,random_state=rs),'ABR'),
               (SVR(),'SVR'),
-            (GaussianNB(),'GNB'),
              ( KNeighborsRegressor(algorithm='brute',n_jobs=nj,leaf_size=60),'KNR'),
              ]
              
     trainedModels = []
     preds=[]
     fs={}
-    def runModel(model:tuple(str,object)):
+    def runModel(model):
         name =model[1]
         model =model[0].fit(data,target)
         pred = model.predict(testData)
         print(pred)
-        print(model,'error \n',mean_squared_error(testTarget,pred))
+        print(model,'error \n',mean_absolute_error(testTarget,pred))
         trainedModels.append((name,model))
         preds.append((model,pred))
-        fs[(name,model)]=mean_squared_error(pred,testTarget)
+        fs[(name,model)]=mean_absolute_error(pred,testTarget)
         
         
    
@@ -127,16 +129,17 @@ def makeRegressors(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget,vot
     )
 
     from sklearn.ensemble import VotingRegressor
-    voter = VotingRegressor(selectedTrainedSet,voting=voting,verbose=True,n_jobs=nj)
+    voter = VotingRegressor(selectedTrainedSet,verbose=True,n_jobs=nj)
     voter.fit(data,target)
 
     for mo in selectedTrainedSet:serialize(mo)
 
     voterPred=voter.predict(testData)
     preds.append(('Voting Regressor',voterPred))
-    print('voting Regressor error','\n',mean_squared_error(voter.predict(testData),testTarget))
-    fs[('voter',voter)] = mean_squared_error(voterPred,testTarget)
-    fs = sorted(fs,key=lambda x: x[1],)
+    print('voting Regressor error','\n',mean_absolute_error(voter.predict(testData),testTarget))
+    fs[('voter',voter)] = mean_absolute_error(voterPred,testTarget)
+    fs = sorted(fs.items(),key=lambda x: x[1],)
     print(f'{fs[0][0]} appears to be the best performer with error of {fs[0][1]}')
     serialize(voter)
+    fs=dict(fs)
     return trainedModels,preds,fs

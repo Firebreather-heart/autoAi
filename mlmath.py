@@ -16,3 +16,4 @@ def fastForward(num:int)->int:
     return req_pow
 def breakDown(num:int) -> int:
     return num/256
+

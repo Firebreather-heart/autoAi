@@ -1,10 +1,11 @@
+import logging
 import os,time
 import autoImputer
 import pandas as pd 
 import numpy as np
 import mlmath
 
-
+logging.basicConfig(level=logging.INFO,)
 classdata = pd.read_csv(r'C:\Users\codeworld\diabetes.csv')
 
 def dataNorm(data:pd.DataFrame, ) -> pd.DataFrame:
@@ -38,7 +39,9 @@ def encoding(data:pd.DataFrame,):
     CAUTION!!! this must be used only after the feature_selector
     has been used, that is if you wish to use the feature selector
     '''
-    return pd.get_dummies(data)
+    data=pd.get_dummies(data)
+    print(data)
+    return data
 
 def feature_selector(data:pd.DataFrame,target):
     '''
@@ -48,16 +51,20 @@ def feature_selector(data:pd.DataFrame,target):
             data is any pandas Dataframe Object
     '''
     print('...selecting best features.......')
-    from sklearn.feature_selection import RFE
-    from sklearn.svm import SVR
-    dat = data.copy()
-    y=target
-    X=dat
-    model = SVR(kernel='linear')
-    rfe = RFE(model,n_features_to_select=int(len(data.columns)*0.5),step=1)
-    selections=rfe.fit(X,y)
-    selections = selections.get_feature_names_out()
-    return X[selections],y
+    if len(data.columns) < 11:
+        return data,target
+    else:
+        from sklearn.feature_selection import RFE
+        from sklearn.svm import SVR
+        dat = data.copy()
+        dat = pd.get_dummies(dat)
+        y=target
+        X=dat
+        model = SVR(kernel='linear')
+        rfe = RFE(model,n_features_to_select=int(len(data.columns)*0.5),step=1)
+        selections=rfe.fit(X,y)
+        selections = selections.get_feature_names_out()
+        return X[selections],y
 
 
 def filterRedundantObject(data:pd.DataFrame,):
@@ -124,7 +131,7 @@ def manual_object_fix(data:pd.DataFrame,target = None) -> pd.DataFrame:
             data is any pandas Dataframe Object
     '''
     #fix missing values
-    print('fixing missing values.....\n')
+    logging.info('fixing missing values.....\n')
     data = data.drop_duplicates()
     v=[]
     for i in data.select_dtypes(include=object).columns:
@@ -135,6 +142,6 @@ def manual_object_fix(data:pd.DataFrame,target = None) -> pd.DataFrame:
             print(f'dropping.......{j[0]}')
          elif j[1]>0 and j[1] < 0.3*len(data[j[0]]):
             data = data.dropna(axis='rows')
-    print('..missing values fixed\n')
+    logging.info('..missing values fixed\n')
     print(data)
     return data
