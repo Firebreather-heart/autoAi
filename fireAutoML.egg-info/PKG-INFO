@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: fireAutoML
+Version: 0.1
+Summary: A module for rapidly building ML models
+Home-page: https://www.dtenny95.wixsite.com/fire_bc
+Author: Akinrotimi Daniel Feyisola
+Author-email: dtenny95@gmail.com
+License: : OSI Approved :: BSD License
+Platform: UNKNOWN
+Requires-Python: >=3.7
+
+UNKNOWN
+
