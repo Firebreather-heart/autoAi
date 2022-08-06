@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-import fireml.autoImputer as autoImputer
+import autoImputer
 import pandas as pd
 import numpy as np
 
@@ -47,7 +47,7 @@ def encoding(data: pd.DataFrame,):
     return data
 
 
-def feature_selector(data: pd.DataFrame, target):
+def feature_selector(data: pd.DataFrame, target:pd.Series):
     '''
         This will select the best features from the given
         dataset.
@@ -108,7 +108,7 @@ def manual_missing_NonObject_fix(data: pd.DataFrame, target=None, aggresive: boo
                     data = data.drop(j[0], axis='columns')
                     print(f'dropping.......{j[0]}')
                 else:
-                    decision = input(
+                    decision = 'yes' if aggresive else input(
                         f'[.] ..The column {j[0]} has {j[1]} missing values out of {data[j[0]].shape[1]}, its advisable to drop it\n Reply yes or no\n').lower()
                     if decision == 'yes':
                         data = data.drop(j[0], axis='columns')

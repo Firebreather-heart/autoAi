@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 from tkinter.filedialog import askopenfilename
-from fireml.modelling import serialize
-from fireml.deepModel import DeepModel
-from fireml.truth import targetTypechecker
+from modelling import serialize
+from deepModel import DeepModel
+from truth import targetTypechecker
 
 info_string =''
 class DataFlow:
@@ -35,16 +35,17 @@ class DataFlow:
             return (1,'cls',dcd)
             
 
-    def fixData(self)-> pd.DataFrame:
-        from fireml.fireAutoML import manual_object_fix,manual_missing_NonObject_fix
-        self.data = manual_missing_NonObject_fix(data=self.data,aggresive=False)
+    def fixData(self, aggresive=False, external=False)-> pd.DataFrame:
+        from fireAutoML import manual_object_fix,manual_missing_NonObject_fix
+        self.data = manual_missing_NonObject_fix(data=self.data,aggresive=aggresive)
         self.data = manual_object_fix(self.data)
-        self.data.pop(self.target)
+        if external == False:
+            self.data.pop(self.target)
         return self.data
 
     def preprocess(self):
 
-        from fireml.fireAutoML import (
+        from fireAutoML import (
             encoding,dataNorm,feature_selector,
             filterRedundantObject
         )
@@ -125,7 +126,7 @@ if __name__ =='__main__':
     data_list = dataflow.preprocess()
 
     from sklearn.model_selection import train_test_split
-    from fireml.modelling import makeRegressors,makeClassifiers
+    from modelling import makeRegressors,makeClassifiers
 
     for data in data_list:
         cor = dataflow.classOrReg()

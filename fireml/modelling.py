@@ -7,8 +7,7 @@ from sklearn.svm import SVC,SVR
 from sklearn.metrics import f1_score,mean_absolute_error
 from xgboost import XGBClassifier,XGBRegressor
 import os
-from collections import OrderedDict
-BASE_DIR = os.path.join(os.getcwd(),os.mkdir('models'))
+BASE_DIR = os.path.join(os.getcwd(),'models')
 
 def serialize(model):
             print(model)
@@ -33,8 +32,8 @@ def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, v
     rs = 2000
     nj =-1
     models = [
-               (MLPClassifier(early_stopping=False,max_iter=1000,verbose=0,random_state=rs,learning_rate='adaptive',
-                            n_iter_no_change=10,hidden_layer_sizes=(100,),
+               (MLPClassifier(early_stopping=True,max_iter=100,verbose=1,random_state=rs,learning_rate='adaptive',
+                            n_iter_no_change=10,hidden_layer_sizes=(10,),
                             warm_start=True),'MLP'),
              ( RandomForestClassifier(n_estimators=500,n_jobs=nj,random_state=rs,warm_start=True,),'RFC'),
               (XGBClassifier(use_label_encoder=False,n_estimators=500,n_jobs=nj,),'XGB'),

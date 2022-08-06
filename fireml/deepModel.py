@@ -1,7 +1,7 @@
 import pandas as pd
 from tensorflow.keras import layers,Sequential
 from tensorflow.keras.callbacks import EarlyStopping,ModelCheckpoint 
-import fireml.mlmath as mlmath
+import   mlmath
 class DeepModel:
     def __init__(self,data:pd.DataFrame,target:pd.Series,testdata:pd.DataFrame,testTarget:pd.Series,task:str='cls',**kwargs):
         '''
