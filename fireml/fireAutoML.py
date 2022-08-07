@@ -8,8 +8,10 @@ import numpy as np
 logging.basicConfig(level=logging.INFO,)
 classdata = pd.read_csv(r'C:\Users\codeworld\diabetes.csv')
 
+
 def check_corr(main, scd):
     return main.corr(scd)
+
 
 def dataNorm(data: pd.DataFrame, ) -> pd.DataFrame:
     '''
@@ -49,7 +51,7 @@ def encoding(data: pd.DataFrame,):
     return data
 
 
-def feature_selector(data: pd.DataFrame, target:pd.Series, style='corr_check'):
+def feature_selector(data: pd.DataFrame, target: pd.Series, style='corr_check'):
     '''
         This will select the best features from the given
         dataset.
@@ -61,41 +63,38 @@ def feature_selector(data: pd.DataFrame, target:pd.Series, style='corr_check'):
             negative or positive correlation.
             the other option is the svr_model
     '''
-    from utils import split_by_sign,fill_to_threshold
+    from utils import split_by_sign, fill_to_threshold
+    from sklearn.feature_selection import RFE
+    from sklearn.svm import SVR
+    dat = data.copy()
+    dat = pd.get_dummies(dat)
+    y = target
+    X = dat
     print('...selecting best features.......')
     if len(data.columns) < 11:
         return data, target
     else:
         if style == 'svr_model':
-            from sklearn.feature_selection import RFE
-            from sklearn.svm import SVR
-            dat = data.copy()
-            dat = pd.get_dummies(dat)
-            y = target
-            X = dat
             model = SVR(kernel='linear')
             rfe = RFE(model, n_features_to_select=int(
                 len(data.columns)*0.5), step=1)
             selections = rfe.fit(X, y)
             selections = selections.get_feature_names_out()
             return X[selections], y
-            
+
         elif style == 'corr_check':
             buc = dict()
             for i in dat.columns:
                 a = check_corr(y, dat[i])
                 buc[a] = i
             bucp, bucn = split_by_sign(buc)
-            whole = fill_to_threshold(bucp,bucn, threshold=len(data.columns)*0.5)
+            whole = fill_to_threshold(
+                bucp, bucn, threshold=len(data.columns)*0.5)
             sel_col = []
             for val in whole:
                 sel_col.append(buc.get(val))
-            return X[sel_col], y 
+            return X[sel_col], y
 
-
-
-            
-           
 
 def filterRedundantObject(data: pd.DataFrame,):
     '''
