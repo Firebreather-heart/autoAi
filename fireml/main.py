@@ -54,7 +54,7 @@ class DataFlow:
         db = [self.data1,self.data2,self.data3]
         if self.use_filter == True:
             db = [filterRedundantObject(df) for df in db]
-            info_string.join('Used filter to remmove columns that contain useless data, check stdout for more info\n')
+            info_string.join('Used filter to remove columns that contain useless data, check stdout for more info\n')
             
         else:
             pass
