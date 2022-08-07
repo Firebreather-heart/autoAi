@@ -87,7 +87,7 @@ def feature_selector(data: pd.DataFrame, target: pd.Series, style='corr_check'):
             for i in dat.columns:
                 a = check_corr(y, dat[i])
                 buc[a] = i
-            bucp, bucn = split_by_sign(buc)
+            bucp, bucn = split_by_sign(buc.keys())
             whole = fill_to_threshold(
                 bucp, bucn, threshold=len(data.columns)*0.5)
             sel_col = []
