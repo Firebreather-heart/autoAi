@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 from tkinter.filedialog import askopenfilename
 from modelling import serialize
-from deepModel import DeepModel
 from truth import targetTypechecker
 
 info_string =''
@@ -150,6 +149,7 @@ if __name__ =='__main__':
         serialize(preferredmodel)
 
         if deep == True:
+            from deepModel import DeepModel
             print('proceeding to fit a deep model\n please wait.....')
             if cor[2] > 1:
                 multiclass = True 

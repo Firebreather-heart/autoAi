@@ -1,19 +1,18 @@
 import logging
 import os
 import time
-import autoImputer
+import fireml.preprocessing.autoImputer as autoImputer
 import pandas as pd
 import numpy as np
 
 logging.basicConfig(level=logging.INFO,)
-classdata = pd.read_csv(r'C:\Users\codeworld\diabetes.csv')
 
 
 def check_corr(main, scd):
     return main.corr(scd)
 
 
-def dataNorm(data: pd.DataFrame, ) -> pd.DataFrame:
+def dataNorm(data: pd.DataFrame, ):
     '''
         Returns a list of pandas datframe objects containing three categories of data,
         standard scaled data, MinMax scaled and Normalised data. This would allow the 
@@ -30,14 +29,15 @@ def dataNorm(data: pd.DataFrame, ) -> pd.DataFrame:
             print(f'{e}\n could not install sklearn library, try to activate your internet connection and try again\ closing program........')
             time.sleep(3)
             os.system('exit')
-    stand = StandardScaler()
-    minmax = MinMaxScaler(feature_range=(0, 1))
-    norm = Normalizer()
-    data_to_normalise = data.select_dtypes(exclude=object)
-    transformed_array = [stand.fit_transform(data_to_normalise), minmax.fit_transform(
-        data_to_normalise), norm.fit_transform(data_to_normalise)]
+    else:
+        stand = StandardScaler()
+        minmax = MinMaxScaler(feature_range=(0, 1))
+        norm = Normalizer()
+        data_to_normalise = data.select_dtypes(exclude='object')
+        transformed_array = [stand.fit_transform(data_to_normalise), minmax.fit_transform(
+            data_to_normalise), norm.fit_transform(data_to_normalise)]
 
-    return [pd.DataFrame(i, columns=data.select_dtypes(exclude=object).columns) for i in transformed_array]
+        return [pd.DataFrame(i, columns=data.select_dtypes(exclude='object').columns) for i in transformed_array]
 
 
 def encoding(data: pd.DataFrame,):
@@ -104,7 +104,7 @@ def filterRedundantObject(data: pd.DataFrame,):
     Params:
             data is any pandas Dataframe Object
     '''
-    for column in data.select_dtypes(include=object).columns:
+    for column in data.select_dtypes(include='object').columns:
         if set(i for i in data[column].values).__len__() > 50:
             data = data.drop(column, axis='columns')
             print(f'dropping.......{column}')
@@ -123,9 +123,9 @@ def manual_missing_NonObject_fix(data: pd.DataFrame, target=None, aggresive: boo
     # fix missing values
     data = data.drop_duplicates()
     v = []
-    for i in data.select_dtypes(exclude=object).columns:
+    for i in data.select_dtypes(exclude='object').columns:
         v.append(data[i].isnull().sum())
-    for j in zip(data.select_dtypes(exclude=object).columns, v):
+    for j in zip(data.select_dtypes(exclude='object').columns, v):
         if j[1] > 0:
             if j[1] > 0.5*data[j[0]].shape[0]:
                 if aggresive == True:
@@ -157,7 +157,7 @@ def manual_missing_NonObject_fix(data: pd.DataFrame, target=None, aggresive: boo
                             except Exception as e:
                                 print(e)
             else:
-                data = data.dropna(axis='rows')
+                data = data.dropna(axis=0)
     return data
 
 
@@ -172,14 +172,14 @@ def manual_object_fix(data: pd.DataFrame, target=None) -> pd.DataFrame:
     logging.info('fixing missing values.....\n')
     data = data.drop_duplicates()
     v = []
-    for i in data.select_dtypes(include=object).columns:
+    for i in data.select_dtypes(include='object').columns:
         v.append(data[i].isnull().sum())
     for j in zip(data.columns, v):
         if j[1] > 0 and j[1] > 0.3*len(data[j[0]]):
             data = data.drop(j[0], axis='columns')
             print(f'dropping.......{j[0]}')
         elif j[1] > 0 and j[1] < 0.3*len(data[j[0]]):
-            data = data.dropna(axis='rows')
+            data = data.dropna(axis=0)
     logging.info('..missing values fixed\n')
     print(data)
     return data

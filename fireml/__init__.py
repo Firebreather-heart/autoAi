@@ -1,16 +1,23 @@
-import os,sys
+import os,sys, importlib, subprocess
 
-#help needed here, if you understand what i'm trying to do help me out
-__version__ = '1.00'
-__all__={'ml':['pandas','numpy','sklearn','xgboost'],'deep':['tensorflow']}
+__version__ = '1.1'
+REQUIRED_PACKAGES = {
+    'ml': ['pandas', 'numpy', 'scikit-learn', 'xgboost'],
+    'deep': ['tensorflow']
+}
+
+__all__ = ['confirmInstallLib', 'REQUIRED_PACKAGES']
 
 def confirmInstallLib(libname):
     try:
-        assert libname
-    except (ModuleNotFoundError,ImportError,AssertionError):
+        import_name = 'sklearn' if libname == 'scikit-learn' else libname
+        
+        importlib.import_module(import_name)
+        print(f"{libname} is already installed")
+    except ImportError:
         try:
-            os.system(f'pip install {libname}')
-            print(f'trying to install {libname}')
+            print(f"Installing {libname}...")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", libname])
         except Exception as e:
-            print(e)
-            sys.exit()
+            print(f"Failed to install {libname}: {e}")
+            sys.exit(1)

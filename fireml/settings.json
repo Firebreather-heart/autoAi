@@ -1,0 +1,5 @@
+{
+    "output_directory": "./output",
+    "log_directory": "./logs",
+    "working_directory": "./"
+}

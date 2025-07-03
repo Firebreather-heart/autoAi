@@ -65,7 +65,7 @@ class DeepModel:
     def makeCompileModel(self,):
         layer_width,num_layers = self.determinePower(self.data)
         deepModel = Sequential([
-            layers.Dense(layer_width,activation='relu',input_shape=self.input_shape,),
+            layers.Dense(layer_width, activation='relu',input_shape=self.input_shape,),
             layers.Dropout(0.05)
         ])
         metric_used = self.task

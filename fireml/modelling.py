@@ -1,3 +1,6 @@
+from fireml.setup import serialize
+import logging 
+
 import pandas as pd
 from sklearn.neural_network import MLPClassifier,MLPRegressor
 from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier, RandomForestRegressor, AdaBoostRegressor
@@ -5,25 +8,10 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier,KNeighborsRegressor
 from sklearn.svm import SVC,SVR 
 from sklearn.metrics import f1_score,mean_absolute_error
-from xgboost import XGBClassifier,XGBRegressor
-import os
-BASE_DIR = os.path.join(os.getcwd(),'models')
 
-def serialize(model):
-            print(model)
-            filename = input('input your desired model name\n')+'.sav'
-            try:
-                import joblib 
-                joblib.dump(model,filename)
-            except ModuleNotFoundError:
-                try:
-                    os.system('pip install joblib')
-                    import joblib 
-                    joblib.dump(model,filename)
-                except Exception:
-                    print('failed to install joblib, using pickle instead')
-                    import pickle 
-                    pickle.dump(model,os.path.join(BASE_DIR,filename))
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, voting:str = 'soft'):
     from threading import Thread
@@ -32,11 +20,11 @@ def makeClassifiers(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget, v
     rs = 2000
     nj =-1
     models = [
-               (MLPClassifier(early_stopping=True,max_iter=100,verbose=1,random_state=rs,learning_rate='adaptive',
+               (MLPClassifier(early_stopping=True,max_iter=100,verbose=True,random_state=rs,learning_rate='adaptive',
                             n_iter_no_change=10,hidden_layer_sizes=(10,),
                             warm_start=True),'MLP'),
              ( RandomForestClassifier(n_estimators=500,n_jobs=nj,random_state=rs,warm_start=True,),'RFC'),
-              (XGBClassifier(use_label_encoder=False,n_estimators=500,n_jobs=nj,),'XGB'),
+             # (XGBClassifier(use_label_encoder=False,n_estimators=500,n_jobs=nj,),'XGB'),
            ( AdaBoostClassifier(n_estimators=500,learning_rate=lr,random_state=rs),'ABC'),
               (SVC(probability=True),'SVC'),
             (GaussianNB(),'GNB'),
@@ -99,7 +87,7 @@ def makeRegressors(data:pd.DataFrame,target,testData:pd.DataFrame,testTarget,):
                             n_iter_no_change=10,hidden_layer_sizes=(100,),
                             warm_start=True),'MLP'),
              ( RandomForestRegressor(n_estimators=500,n_jobs=nj,random_state=rs,warm_start=True,),'RFR'),
-              (XGBRegressor(use_label_encoder=False,n_estimators=500,n_jobs=nj,),'XGB'),
+             # (XGBRegressor(use_label_encoder=False,n_estimators=500,n_jobs=nj,),'XGB'),
            ( AdaBoostRegressor(n_estimators=500,learning_rate=lr,random_state=rs),'ABR'),
               (SVR(),'SVR'),
              ( KNeighborsRegressor(algorithm='brute',n_jobs=nj,leaf_size=60),'KNR'),

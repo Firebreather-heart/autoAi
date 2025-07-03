@@ -15,6 +15,6 @@ def fastForward(num:int)->int:
             threshold = True
     return req_pow
     
-def breakDown(num:int) -> int:
+def breakDown(num:int) -> float:
     return num/256
 
