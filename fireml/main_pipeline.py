@@ -149,7 +149,7 @@ def run_full_pipeline(
     # Reporting
     model_paths = {}
     for name, model in trained_models:
-        path = serialize(model, model_name=f"{name}_model")
+        path = serialize(model, model_name=f"{name}_model", output_dir=output_dir)
         model_paths[name] = path
 
         

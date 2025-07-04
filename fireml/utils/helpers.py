@@ -5,7 +5,7 @@ from fireml.settings import Settings
 
 logger = logging.getLogger(__name__)
 
-def serialize(model, model_name=None):
+def serialize(model, model_name=None, output_dir=None):
     """
     Serialize a model to disk.
     
@@ -17,7 +17,8 @@ def serialize(model, model_name=None):
         Path to the saved model file
     """
     settings = Settings()
-    output_dir = settings.output_directory
+    if output_dir is None:
+        output_dir = settings.output_directory
     os.makedirs(output_dir, exist_ok=True)
     
     names = ['charlie', 'gemini', 'lexie', 'lollie']
