@@ -70,6 +70,11 @@ fireml analyze --input data.csv --output ./my_analysis
 fireml analyze --input data.csv --target "price" --task regression
 ```
 
+To run the tool without installation run
+```bash
+python -m fireml.cli <add-the-desired-arguments>
+```
+
 ### `report`
 
 Generate a data validation and exploration report.
