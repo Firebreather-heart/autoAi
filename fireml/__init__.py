@@ -1,23 +1,11 @@
-import os,sys, importlib, subprocess
+import logging
+from .utils.logging_config import setup_logging
 
-__version__ = '1.1'
-REQUIRED_PACKAGES = {
-    'ml': ['pandas', 'numpy', 'scikit-learn', 'xgboost'],
-    'deep': ['tensorflow']
-}
+__version__ = "1.0.0"
 
-__all__ = ['confirmInstallLib', 'REQUIRED_PACKAGES']
+# Configure logging when the package is imported
+setup_logging()
 
-def confirmInstallLib(libname):
-    try:
-        import_name = 'sklearn' if libname == 'scikit-learn' else libname
-        
-        importlib.import_module(import_name)
-        print(f"{libname} is already installed")
-    except ImportError:
-        try:
-            print(f"Installing {libname}...")
-            subprocess.check_call([sys.executable, "-m", "pip", "install", libname])
-        except Exception as e:
-            print(f"Failed to install {libname}: {e}")
-            sys.exit(1)
+# Set a null handler to prevent "No handler found" warnings
+# if the library is used without a configured logger.
+logging.getLogger(__name__).addHandler(logging.NullHandler())

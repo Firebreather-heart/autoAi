@@ -1,0 +1,2 @@
+[console_scripts]
+fireml = fireml.cli:main
