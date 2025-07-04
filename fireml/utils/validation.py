@@ -153,7 +153,6 @@ def detect_dataset_type(df: pd.DataFrame, target_col: Optional[str] = None) -> D
 
 def is_classification_task(target_series: pd.Series) -> Tuple[bool, float]:
     unique_count = target_series.nunique()
-    total_count = len(target_series)
 
     if unique_count <= 10:
         if target_series.dtype in ['object', 'category', 'bool']:

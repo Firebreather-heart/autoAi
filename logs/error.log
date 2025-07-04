@@ -61,3 +61,5 @@
 2025-07-04 13:45:06,711 - fireml.models - ERROR - __init__.py:70 - Error training XGB model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
 2025-07-04 13:45:07,100 - fireml.models - ERROR - __init__.py:70 - Error training ABC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
 2025-07-04 13:45:07,101 - fireml.models - ERROR - __init__.py:108 - No successful models to ensemble.
+2025-07-04 23:16:26,794 - fireml.data_loader - ERROR - data_loader.py:87 - Error loading data from /home/fireheart/codeworld/py/notebooks/loandata.csv: Source not found or not supported: /home/fireheart/codeworld/py/notebooks/loandata.csv
+2025-07-04 23:16:26,797 - __main__ - ERROR - cli.py:64 - Failed to load data. Exiting.

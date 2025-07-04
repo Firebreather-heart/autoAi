@@ -258,7 +258,7 @@ def train_models(data: pd.DataFrame,
         serialize(model, f"{name}_model")
     
     # Save ensemble
-    serialize(ensemble, f"{ensemble_name}")
+    # serialize(ensemble, f"{ensemble_name}")
     
     # Format results
     sorted_metrics = sorted(

@@ -17,7 +17,8 @@ from .feature_engineering import (
     feature_selector,
     filterRedundantObject,
     manual_missing_NonObject_fix,
-    manual_object_fix
+    manual_object_fix,
+    encode_cat
 )
 
 __all__ = [
@@ -31,5 +32,6 @@ __all__ = [
     'augment_tabular_data',
     'augment_text_data',
     'augment_image_data',
-    'balance_classes'
+    'balance_classes',
+    'encode_cat',
 ]

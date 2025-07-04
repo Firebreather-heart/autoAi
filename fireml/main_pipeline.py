@@ -22,6 +22,7 @@ from fireml.preprocessing import (
     manual_missing_NonObject_fix,
     manual_object_fix,
     balance_classes,
+    encode_cat
 )
 from fireml.models import train_models
 from fireml.evaluation import ModelEvaluator
@@ -55,6 +56,10 @@ def run_full_pipeline(
         output_dir = settings.output_directory
     os.makedirs(output_dir, exist_ok=True)
 
+    results = {}
+    results["dataset_validation_results"] = validate_dataframe(df)
+    
+
     preprocessing_steps = [
         "Imputed missing values (manual_missing_NonObject_fix)",
         "Fixed object columns (manual_object_fix)",
@@ -84,6 +89,8 @@ def run_full_pipeline(
         if target_column is None:
             raise ValueError("No target column detected. Please specify a target column.")
         logger.info(f"Auto-detected target column: {target_column}")
+    
+    results['dataset_type'] = detect_dataset_type(df, target_col=target_column)
     
     if task_type == 'auto':
         is_class, _ = is_classification_task(df[target_column])
@@ -119,8 +126,12 @@ def run_full_pipeline(
         target_final = target_clean
 
     # 4. Feature Engineering
+    le = LabelEncoder()
+    target_final = le.fit_transform(target_final)
+    target_final = pd.Series(target_final) # type: ignore
+    features_filtered = encode_cat(features_filtered)
     normalized_dfs = dataNorm(features_final)
-    selected_features, _ = feature_selector(normalized_dfs[0], target_final)
+    selected_features, _ = feature_selector(normalized_dfs[0], target_final) # type: ignore
     encoded_features = encoding(selected_features)
 
     # Train/Test Split
@@ -130,9 +141,9 @@ def run_full_pipeline(
         stratify=target_final if task_type == 'classification' else None
     )
 
-    le = LabelEncoder()
-    y_train = le.fit_transform(y_train)  
-    y_test = le.transform(y_test)  
+    # le = LabelEncoder()
+    # y_train = le.fit_transform(y_train)  
+    # y_test = le.transform(y_test)  
 
     #  Model Training
     logger.info(f"Training {task_type} models...")
@@ -160,7 +171,8 @@ def run_full_pipeline(
         data_summary=data_summary,
         class_distribution=class_distribution,
         feature_names=feature_names,
-        model_paths=model_paths
+        model_paths=model_paths,
+        extras=results
     )
     report_path = os.path.join(output_dir, "evaluation_report.html")
     with open(report_path, 'w', encoding='utf-8') as f:

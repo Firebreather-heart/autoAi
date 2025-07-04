@@ -42,6 +42,7 @@ class ModelEvaluator:
             self.has_viz = False
             logger.warning("Matplotlib not available. Visualizations will be skipped.")
     
+
     def evaluate_model(self, 
                       model_name: str,
                       model: Any, 
@@ -500,7 +501,8 @@ class ModelEvaluator:
                         data_summary: Optional[dict] = None,
                         class_distribution: Optional[dict] = None,
                         feature_names: Optional[list] = None,
-                        model_paths: Optional[dict] = None) -> Union[Dict, str]:
+                        model_paths: Optional[dict] = None,
+                        extras:Optional[dict] = None) -> Union[Dict, str]:
         """
         Generate a comprehensive evaluation report.
 
@@ -530,6 +532,9 @@ class ModelEvaluator:
             "class_distribution": class_distribution or {},
             "model_paths": model_paths or {},
         }
+
+        if extras:
+            report.update(extras)
 
         # Add feature importances for each model if available
         if feature_names:
@@ -639,6 +644,8 @@ class ModelEvaluator:
                     body { font-family: Arial, sans-serif; margin: 20px; }
                     h1, h2, h3 { color: #333; }
                     .recommendation { margin: 10px 0; padding: 10px; border-left: 4px solid #2196F3; background-color: #E3F2FD; }
+                    .issues { margin: 10px 0; padding: 10px; border-left: 4px solid red; background-color: rgb(247, 128, 128); }
+                    .ds-info{padding:10px; }
                     .warning { border-left-color: #FFC107; background-color: #FFF8E1; }
                     table { border-collapse: collapse; width: 100%; margin: 15px 0; }
                     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
@@ -653,6 +660,63 @@ class ModelEvaluator:
                 <h1>FireAutoML Model Evaluation Report</h1>
                 <p><strong>Generated at:</strong> {{ report.generated_at }}</p>
                 <p><strong>Task type:</strong> {{ report.task_type }}</p>
+
+                <div class="ds-info">
+                    <h2>Dataset Info </h2>
+                    {% if report.dataset_validation_results %}
+                    <div class="recommendation">
+                    <h2>Summary</h2>
+                    <p>
+                        <strong>Shape</strong>: {{report.dataset_validation_results.summary.shape}}
+                    </p>
+                    <p>
+                        <strong>Memory Usage:</strong>: {{report.dataset_validation_results.summary.memory_usage}} Mb
+                    </p>
+                    <p>
+                        <strong>Duplicate Rows:</strong>: {{report.dataset_validation_results.summary.duplicate_rows}}
+                    </p>
+                    <p>
+                        <strong>Column Types:</strong>: {{report.dataset_validation_results.summary.column_types}}
+                    </p>
+                    <p>
+                        <strong>Column Counts:</strong>: {{report.dataset_validation_results.summary.column_counts}}
+                    </p>
+                    <p>
+                        <strong>Missing Values:</strong>: {{report.dataset_validation_results.summary.missing_values}}
+                    </p>
+                    </div>
+                    <div class="issues">
+                    <h2>Issues</h2>
+                    <ul>
+                        {% for item in report.dataset_validation_results.issues %}
+                            <li>
+                            {{item}}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    </div>
+                    <div class="warning">
+                    <h2>Warnings</h2>
+                    <ul>
+                        {% for item in report.dataset_validation_results.warnings %}
+                            <li>
+                            {{item}}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    </div>
+                    <div class="recommendation">
+                    <h2>Recommendations</h2>
+                    <ul>
+                        {% for item in report.dataset_validation_results.recommendations %}
+                            <li>
+                            {{item}}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    </div>
+                    {% endif %}
+                <div>
                 
                 <h2>Model Comparison Summary</h2>
                 {% if report.summary.best_model %}

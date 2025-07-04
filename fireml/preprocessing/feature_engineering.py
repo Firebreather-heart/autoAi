@@ -92,7 +92,19 @@ def encoding(data: pd.DataFrame,):
     return encoded_data
 
 
-def feature_selector(data: pd.DataFrame, target: pd.Series, style='corr_check')-> Tuple[pd.DataFrame, pd.Series]:
+def encode_cat(data:pd.DataFrame)->pd.DataFrame:
+    logger.info("encoding catergorical features")
+    from sklearn.preprocessing import LabelEncoder
+    le = LabelEncoder()
+    categorical_data = data.select_dtypes(include='object').columns
+    for col in categorical_data:
+        data[col] = le.fit_transform(data[col])
+    return data
+
+
+def feature_selector(data: pd.DataFrame, 
+                     target: pd.Series, 
+                     style='corr_check')-> Tuple[pd.DataFrame, pd.Series]:
     '''
         This will select the best features from the given
         dataset.
@@ -126,7 +138,7 @@ def feature_selector(data: pd.DataFrame, target: pd.Series, style='corr_check')-
 
     elif style == 'corr_check':
         buc = dict()
-        for i in data.columns:
+        for i in dat.columns:
             a = check_corr(y, dat[i])
             buc[a] = i
         bucp, bucn = split_by_sign(list(buc.keys()))

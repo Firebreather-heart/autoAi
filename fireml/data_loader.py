@@ -128,7 +128,7 @@ def load_csv(path: str, **kwargs) -> pd.DataFrame:
         # Try to convert string columns to datetime if they look like dates
         for col in df.select_dtypes(include=['object']).columns:
             try:
-                date_series = pd.to_datetime(df[col], errors='coerce')
+                date_series = pd.to_datetime(df[col], errors='coerce', format='%Y-%m-%d %H:%M:%S.%f')
                 # If most values converted successfully, use the datetime
                 if date_series.notna().mean() > 0.7:
                     df[col] = date_series
