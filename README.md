@@ -27,7 +27,7 @@ pip install .
 
 Or directly from the repository (if you have one):
 ```bash
-pip install git+https://github.com/your-username/fireml.git
+pip install git+https://github.com/firebreather-heart/autoAI
 ```
 
 ### Optional Dependencies

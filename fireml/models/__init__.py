@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 from fireml.utils.helpers import serialize
 
 import pandas as pd
@@ -101,12 +102,20 @@ def create_ensemble(model_results: Dict,
     )
     
     # Select top 3 models
-    top_models = [(name, model) for (name, model), _ in metrics_items[:3]]
-    
+    top_models = []
+
+    if len(metrics_items) == 0:
+        logger.error("No successful models to ensemble.")
+        raise ValueError("No successful models to ensemble.")
+    elif len(metrics_items) <= 3:
+        top_models = [item[0] for item in metrics_items]
+    else:
+        top_models = [metrics_items.pop(0)[0] for _ in range(3)]
+
     # Create ensemble
     if task_type == "classification":
         ensemble = VotingClassifier(estimators=top_models, voting=voting, n_jobs=n_jobs)
-        metric_func = f1_score
+        metric_func = get_f1_metric(target)
     else:
         ensemble = VotingRegressor(estimators=top_models, n_jobs=n_jobs)
         metric_func = mean_absolute_error
@@ -134,6 +143,14 @@ def create_ensemble(model_results: Dict,
         return top_models[0][1], metrics_items[0][1]
 
 
+def get_f1_metric(target):
+    n_classes = len(np.unique(target))
+    if n_classes == 2:
+        return partial(f1_score, average='binary')
+    else:
+        return partial(f1_score, average='weighted')
+
+
 def train_models(data: pd.DataFrame, 
                 target: Union[pd.Series, np.ndarray],
                 test_data: pd.DataFrame,
@@ -158,6 +175,12 @@ def train_models(data: pd.DataFrame,
     random_state = 2000
     n_jobs = -1
     learning_rate = 0.001
+
+    #encode target
+    from sklearn.preprocessing import LabelEncoder
+    le = LabelEncoder()
+    target = le.fit_transform(target) #type:ignore
+    test_target = le.transform(test_target) #type:ignore
     
     # Select models based on task type
     if task_type == "classification":
@@ -175,7 +198,7 @@ def train_models(data: pd.DataFrame,
             (GaussianNB(), 'GNB'),
             (KNeighborsClassifier(algorithm='brute', n_jobs=n_jobs, leaf_size=60), 'KNC')
         ]
-        metric_func = f1_score
+        metric_func = get_f1_metric(target)
     else:  # regression
         models = [
             (MLPRegressor(early_stopping=False, max_iter=1000, verbose=True, 

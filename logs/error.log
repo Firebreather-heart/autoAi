@@ -1,0 +1,63 @@
+2025-07-04 12:49:09,211 - fireml.models - ERROR - __init__.py:69 - Error training XGB model: Invalid classes inferred from unique values of `y`.  Expected: [0 1 2], got ['Iris-setosa' 'Iris-versicolor' 'Iris-virginica']
+2025-07-04 12:49:09,369 - fireml.models - ERROR - __init__.py:69 - Error training SVC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 12:49:09,431 - fireml.models - ERROR - __init__.py:69 - Error training GNB model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 12:49:09,715 - fireml.models - ERROR - __init__.py:69 - Error training KNC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 12:49:09,967 - fireml.models - ERROR - __init__.py:69 - Error training MLP model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 12:49:10,863 - fireml.models - ERROR - __init__.py:69 - Error training RFC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 12:49:11,139 - fireml.models - ERROR - __init__.py:69 - Error training ABC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 12:49:11,141 - fireml.models - ERROR - __init__.py:133 - Error creating ensemble: Invalid 'estimators' attribute, 'estimators' should be a non-empty list of (string, estimator) tuples.
+2025-07-04 13:10:52,418 - fireml.models - ERROR - __init__.py:69 - Error training XGB model: Invalid classes inferred from unique values of `y`.  Expected: [0 1 2], got ['Iris-setosa' 'Iris-versicolor' 'Iris-virginica']
+2025-07-04 13:10:52,656 - fireml.models - ERROR - __init__.py:69 - Error training GNB model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:10:52,676 - fireml.models - ERROR - __init__.py:69 - Error training SVC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:10:53,440 - fireml.models - ERROR - __init__.py:69 - Error training MLP model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:10:54,701 - fireml.models - ERROR - __init__.py:69 - Error training KNC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:10:55,085 - fireml.models - ERROR - __init__.py:69 - Error training RFC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:10:55,510 - fireml.models - ERROR - __init__.py:69 - Error training ABC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:12:53,419 - fireml.models - ERROR - __init__.py:69 - Error training XGB model: Invalid classes inferred from unique values of `y`.  Expected: [0 1 2], got ['Iris-setosa' 'Iris-versicolor' 'Iris-virginica']
+2025-07-04 13:12:53,737 - fireml.models - ERROR - __init__.py:69 - Error training SVC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:12:53,877 - fireml.models - ERROR - __init__.py:69 - Error training GNB model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:12:54,551 - fireml.models - ERROR - __init__.py:69 - Error training MLP model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:12:55,459 - fireml.models - ERROR - __init__.py:69 - Error training KNC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:12:55,920 - fireml.models - ERROR - __init__.py:69 - Error training RFC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:12:56,396 - fireml.models - ERROR - __init__.py:69 - Error training ABC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:12:56,399 - fireml.models - ERROR - __init__.py:139 - Error creating ensemble: not enough values to unpack (expected 2, got 0)
+2025-07-04 13:26:13,156 - fireml.models - ERROR - __init__.py:69 - Error training GNB model: Mix of label input types (string and number)
+2025-07-04 13:26:13,190 - fireml.models - ERROR - __init__.py:69 - Error training SVC model: Mix of label input types (string and number)
+2025-07-04 13:26:13,776 - fireml.models - ERROR - __init__.py:69 - Error training MLP model: Mix of label input types (string and number)
+2025-07-04 13:26:14,198 - fireml.models - ERROR - __init__.py:69 - Error training KNC model: Mix of label input types (string and number)
+2025-07-04 13:26:15,224 - fireml.models - ERROR - __init__.py:69 - Error training XGB model: Mix of label input types (string and number)
+2025-07-04 13:26:15,473 - fireml.models - ERROR - __init__.py:69 - Error training RFC model: Mix of label input types (string and number)
+2025-07-04 13:26:16,319 - fireml.models - ERROR - __init__.py:69 - Error training ABC model: Mix of label input types (string and number)
+2025-07-04 13:26:16,320 - fireml.models - ERROR - __init__.py:139 - Error creating ensemble: Invalid 'estimators' attribute, 'estimators' should be a non-empty list of (string, estimator) tuples.
+2025-07-04 13:27:19,825 - fireml.models - ERROR - __init__.py:69 - Error training SVC model: Mix of label input types (string and number)
+2025-07-04 13:27:19,877 - fireml.models - ERROR - __init__.py:69 - Error training GNB model: Mix of label input types (string and number)
+2025-07-04 13:27:20,440 - fireml.models - ERROR - __init__.py:69 - Error training MLP model: Mix of label input types (string and number)
+2025-07-04 13:27:21,242 - fireml.models - ERROR - __init__.py:69 - Error training KNC model: Mix of label input types (string and number)
+2025-07-04 13:27:21,931 - fireml.models - ERROR - __init__.py:69 - Error training XGB model: Mix of label input types (string and number)
+2025-07-04 13:27:22,043 - fireml.models - ERROR - __init__.py:69 - Error training RFC model: Mix of label input types (string and number)
+2025-07-04 13:27:22,837 - fireml.models - ERROR - __init__.py:69 - Error training ABC model: Mix of label input types (string and number)
+2025-07-04 13:27:22,841 - fireml.models - ERROR - __init__.py:139 - Error creating ensemble: Invalid 'estimators' attribute, 'estimators' should be a non-empty list of (string, estimator) tuples.
+2025-07-04 13:27:47,609 - fireml.models - ERROR - __init__.py:69 - Error training SVC model: Mix of label input types (string and number)
+2025-07-04 13:27:47,625 - fireml.models - ERROR - __init__.py:69 - Error training GNB model: Mix of label input types (string and number)
+2025-07-04 13:27:48,293 - fireml.models - ERROR - __init__.py:69 - Error training KNC model: Mix of label input types (string and number)
+2025-07-04 13:27:48,325 - fireml.models - ERROR - __init__.py:69 - Error training MLP model: Mix of label input types (string and number)
+2025-07-04 13:27:48,924 - fireml.models - ERROR - __init__.py:69 - Error training XGB model: Mix of label input types (string and number)
+2025-07-04 13:27:49,260 - fireml.models - ERROR - __init__.py:69 - Error training RFC model: Mix of label input types (string and number)
+2025-07-04 13:27:49,674 - fireml.models - ERROR - __init__.py:69 - Error training ABC model: Mix of label input types (string and number)
+2025-07-04 13:27:49,675 - fireml.models - ERROR - __init__.py:138 - Error creating ensemble: Invalid 'estimators' attribute, 'estimators' should be a non-empty list of (string, estimator) tuples.
+2025-07-04 13:35:53,856 - fireml.models - ERROR - __init__.py:69 - Error training SVC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:35:53,912 - fireml.models - ERROR - __init__.py:69 - Error training GNB model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:35:54,333 - fireml.models - ERROR - __init__.py:69 - Error training MLP model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:35:54,814 - fireml.models - ERROR - __init__.py:69 - Error training KNC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:35:55,956 - fireml.models - ERROR - __init__.py:69 - Error training XGB model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:35:56,108 - fireml.models - ERROR - __init__.py:69 - Error training RFC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:35:56,939 - fireml.models - ERROR - __init__.py:69 - Error training ABC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:35:56,939 - fireml.models - ERROR - __init__.py:107 - No successful models to ensemble.
+2025-07-04 13:45:05,239 - fireml.models - ERROR - __init__.py:70 - Error training GNB model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:45:05,258 - fireml.models - ERROR - __init__.py:70 - Error training SVC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:45:05,765 - fireml.models - ERROR - __init__.py:70 - Error training MLP model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:45:06,397 - fireml.models - ERROR - __init__.py:70 - Error training KNC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:45:06,562 - fireml.models - ERROR - __init__.py:70 - Error training RFC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:45:06,711 - fireml.models - ERROR - __init__.py:70 - Error training XGB model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:45:07,100 - fireml.models - ERROR - __init__.py:70 - Error training ABC model: Target is multiclass but average='binary'. Please choose another average setting, one of [None, 'micro', 'macro', 'weighted'].
+2025-07-04 13:45:07,101 - fireml.models - ERROR - __init__.py:108 - No successful models to ensemble.

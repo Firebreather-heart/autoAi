@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class ModelEvaluator:
     """Class for comprehensive model evaluation and comparison."""
     
-    def __init__(self, task_type: str = 'classification'):
+    def __init__(self, task_type: str = 'classification', report_dir:Optional[Any] = 'default'):
         """
         Initialize the model evaluator.
         
@@ -27,7 +27,10 @@ class ModelEvaluator:
         self.task_type = task_type.lower()
         self.results = {}
         self.settings = Settings()
-        self.report_dir = os.path.join(self.settings.output_directory, 'reports')
+        if report_dir and report_dir != 'default':
+            self.report_dir = report_dir 
+        else:
+            self.report_dir = os.path.join(self.settings.output_directory, 'reports')
         os.makedirs(self.report_dir, exist_ok=True)
         
         # Initialize visualization if matplotlib is available
@@ -106,7 +109,7 @@ class ModelEvaluator:
             
             # Classification report (precision, recall, f1)
             try:
-                class_report = metrics.classification_report(y_test, y_pred, output_dict=True)
+                class_report = metrics.classification_report(y_test, y_pred, output_dict=True, zero_division=0)
                 result['classification_report'] = class_report
                 
                 # Extract key metrics from report for easier access
@@ -180,6 +183,7 @@ class ModelEvaluator:
                 else:
                     result['overfitting_warning'] = False
         
+        result['model_obj'] = model
         # Store the results
         self.results[model_name] = result
         
@@ -491,37 +495,61 @@ class ModelEvaluator:
         
         return comparison
     
-    def generate_report(self, output_format: str = 'json', include_visualizations: bool = True) -> Union[Dict, str]:
+    def generate_report(self, output_format: str = 'json', include_visualizations: bool = True,
+                        preprocessing_steps: Optional[list] = None,
+                        data_summary: Optional[dict] = None,
+                        class_distribution: Optional[dict] = None,
+                        feature_names: Optional[list] = None,
+                        model_paths: Optional[dict] = None) -> Union[Dict, str]:
         """
         Generate a comprehensive evaluation report.
-        
+
         Args:
             output_format: Format for report ('json', 'html', 'markdown')
             include_visualizations: Whether to include visualizations
-            
+            preprocessing_steps: List of preprocessing steps applied
+            data_summary: Dict with data summary info
+            class_distribution: Dict with class distribution info
+            feature_names: List of feature names
+            model_paths: Dict mapping model names to serialized file paths
+
         Returns:
             Report in requested format
         """
         # Compare models to get best one
         comparison = self.compare_models()
-        
+
         # Initialize report structure
         report = {
             "summary": comparison,
             "detailed_metrics": self.results,
             "generated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-            "task_type": self.task_type
+            "task_type": self.task_type,
+            "preprocessing_steps": preprocessing_steps or [],
+            "data_summary": data_summary or {},
+            "class_distribution": class_distribution or {},
+            "model_paths": model_paths or {},
         }
-        
+
+        # Add feature importances for each model if available
+        if feature_names:
+            report["feature_importances"] = {}
+            for model_name, metrics in self.results.items():
+                model = metrics.get('model_obj')
+                if model:
+                    importances = self.feature_importance(model, feature_names)
+                    if importances:
+                        report["feature_importances"][model_name] = importances
+
         # Add recommendations
         report["recommendations"] = self._generate_recommendations(comparison)
-        
+
         # Add visualization paths if requested
         if include_visualizations and self.has_viz:
             viz_dir = os.path.join(self.report_dir, 'visualizations')
             if os.path.exists(viz_dir):
                 report["visualizations"] = [os.path.join(viz_dir, f) for f in os.listdir(viz_dir) if f.endswith('.png')]
-        
+
         # Convert to requested format
         if output_format == 'json':
             return report
@@ -531,7 +559,7 @@ class ModelEvaluator:
             return self._convert_to_markdown(report)
         else:
             return report
-    
+        
     def _generate_recommendations(self, comparison: Dict) -> List[Dict[str, str]]:
         """Generate model recommendations based on comparison results."""
         recommendations = []
@@ -689,6 +717,14 @@ class ModelEvaluator:
                     {% endfor %}
                 </table>
                 {% endfor %}
+                {% if report.model_paths %}
+                <h2>Download Trained Models</h2>
+                <ul>
+                {% for model_name, path in report.model_paths.items() %}
+                    <li><a href="{{ path }}">{{ model_name }}</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
             </body>
             </html>
             """

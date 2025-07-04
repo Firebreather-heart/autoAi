@@ -6,6 +6,8 @@ import logging
 import pandas as pd
 from typing import Dict, Any, Optional
 
+from sklearn.calibration import LabelEncoder
+
 from fireml.utils import (
     validate_dataframe,
     detect_dataset_type,
@@ -24,6 +26,7 @@ from fireml.preprocessing import (
 from fireml.models import train_models
 from fireml.evaluation import ModelEvaluator
 from fireml.settings import Settings
+from fireml.utils.helpers import serialize
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +54,29 @@ def run_full_pipeline(
     if output_dir is None:
         output_dir = settings.output_directory
     os.makedirs(output_dir, exist_ok=True)
+
+    preprocessing_steps = [
+        "Imputed missing values (manual_missing_NonObject_fix)",
+        "Fixed object columns (manual_object_fix)",
+        "Removed redundant object columns (filterRedundantObject)",
+        "Balanced classes (if classification)",
+        "Normalized features (dataNorm)",
+        "Feature selection (feature_selector)",
+        "Encoded categorical features (encoding)"
+    ]
+
+    # Data summary and class distribution
+    data_summary = {
+        "n_samples": len(df),
+        "n_features": len(df.columns),
+        "n_missing": int(df.isnull().sum().sum()),
+        "feature_types": df.dtypes.value_counts().to_dict()
+    }
+    class_distribution = (
+        df[target_column].value_counts().to_dict()
+        if task_type == "classification" else {}
+    )
+    
 
     # Target and Task Detection
     if not target_column:
@@ -104,20 +130,38 @@ def run_full_pipeline(
         stratify=target_final if task_type == 'classification' else None
     )
 
+    le = LabelEncoder()
+    y_train = le.fit_transform(y_train)  
+    y_test = le.transform(y_test)  
+
     #  Model Training
     logger.info(f"Training {task_type} models...")
     trained_models, _, _ = train_models(
-        X_train, y_train, X_test, y_test, task_type=task_type
+        X_train, y_train, X_test, y_test, task_type=task_type #type:ignore
     )
 
     # Evaluation
     logger.info("Evaluating models...")
-    evaluator = ModelEvaluator(task_type=task_type)
+    evaluator = ModelEvaluator(task_type=task_type, report_dir=output_dir)
     for name, model in trained_models:
-        evaluator.evaluate_model(name, model, X_test, y_test, X_train, y_train)
+        evaluator.evaluate_model(name, model, X_test, y_test, X_train, y_train) #type:ignore
 
     # Reporting
-    report = evaluator.generate_report(output_format='html')
+    model_paths = {}
+    for name, model in trained_models:
+        path = serialize(model, model_name=f"{name}_model")
+        model_paths[name] = path
+
+        
+    feature_names = list(encoded_features.columns)
+    report = evaluator.generate_report(
+        output_format='html',
+        preprocessing_steps=preprocessing_steps,
+        data_summary=data_summary,
+        class_distribution=class_distribution,
+        feature_names=feature_names,
+        model_paths=model_paths
+    )
     report_path = os.path.join(output_dir, "evaluation_report.html")
     with open(report_path, 'w', encoding='utf-8') as f:
         f.write(report) #type:ignore
